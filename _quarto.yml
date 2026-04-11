@@ -1,0 +1,32 @@
+project:
+  type: website
+
+website:
+  favicon: "https://migue-rc.github.io/favicon.ico"
+  # Creates a top navbar so users can always get back to your Hub
+  navbar:
+    background: primary
+    left:
+      - text: "← Back to Main"
+        href: "https://migue-rc.github.io"
+
+# Engine configuration (Moved out of format block)
+execute:
+  warning: false # Hides Python deprecation/info warnings in the final output
+
+format:
+  html:
+    # Loads the base theme, then any local SCSS variables
+    theme:
+      light: [sketchy, custom.scss]
+      dark: [sketchy, sketchy-dark.scss]
+    # Injects your live, remote CSS file for instant global updates
+    highlight-style: 
+      light: github
+      dark: monokai
+    include-in-header: 
+      text: |
+        <link rel="stylesheet" href="https://migue-rc.github.io/brand-theme.css">
+    css: local-style.css
+    toc: true
+    code-fold: true

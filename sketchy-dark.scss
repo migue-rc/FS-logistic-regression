@@ -1,0 +1,71 @@
+/*-- scss:defaults --*/
+
+// 1. The Chalkboard Backgrounds
+$body-bg: #222529 !default;      // Dark slate/charcoal background
+$body-color: #f8f9fa !default;   // Off-white chalky text
+
+// 2. The Chalk Colors (Pastels look best on dark Sketchy)
+$primary: #66d9ef !default;      // Bright chalky blue for primary buttons
+$secondary: #444a51 !default;    // Muted dark grey for secondary elements
+$success: #a6e22e !default;      // Neon chalk green
+$info: #fd971f !default;         // Chalky orange
+$warning: #e6db74 !default;      // Chalky yellow
+$danger: #f92672 !default;       // Chalky pink/red
+
+// 3. Links and Highlights
+$link-color: #66d9ef !default;
+
+// 4. Cards and Containers (Slightly lighter than the background)
+$card-bg: #2c3035 !default;
+$card-cap-bg: rgba(255, 255, 255, 0.05) !default;
+
+// We need to lighten the borders so they show up against the dark background
+$border-color: #6c757d !default; 
+$input-border-color: #6c757d !default;
+
+
+.navbar {
+  background-color: #1a1c20 !important;
+  border-bottom: 2px solid #6c757d;
+}
+
+.form-control {
+  background-color: #2c3035;
+  color: #f8f9fa;
+}
+
+.form-control:focus {
+  background-color: #222529;
+  color: #ffffff;
+}
+
+code {
+  color: #66d9ef !important;            /* Chalky blue text */
+  background-color: #1a1c20 !important; /* Force a dark slate background */
+  border: 1px solid #444a51 !important; /* Subtle dark grey border */
+  padding: 0.2em 0.4em !important;
+  border-radius: 4px !important;
+}
+
+pre code {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+pre code {
+  color: #f8f9fa !important;
+  background-color: transparent; 
+}
+
+.listing-category {
+  color: #f8f9fa !important;             /* Bright chalk white text */
+  border-color: rgba(248, 249, 250, 0.5) !important; /* Semi-transparent white border */
+  background-color: transparent !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.listing-category:hover {
+  background-color: rgba(248, 249, 250, 0.1) !important; /* Slight white glow on hover */
+  color: #ffffff !important;
+}
