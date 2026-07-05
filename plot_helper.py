@@ -49,32 +49,28 @@ def plot_sigmoid_interactive(X, y_true,
                                          line=dict(width=2, color='black')),
                              name='Current Point'))
 
-    # 5. Build Frames for all combinations
-    frames = []
-    for t in thresholds:
-        t_val = round(t, 2)
-
+    # 5. Build Frames — only the combinations the sliders can actually
+    # reach (each slider resets the other axis), and only the traces that
+    # change per frame. This is what keeps the exported page small: the
+    # full cartesian product would be 51*101 frames of duplicated data.
+    def make_frame(t_val, x_val):
         mask_green = y_curve < t_val
         mask_blue = y_curve >= t_val
-        for x_p in x_positions:
-            x_val = int(x_p)
+        y_p = sigmoid(x_val)
+        p_color = "blue" if y_p >= t_val else "green"
+        return go.Frame(
+            data=[
+                go.Scatter(x=x_curve[mask_green], y=y_curve[mask_green]),  # Trace 2: Green Curve
+                go.Scatter(x=x_curve[mask_blue], y=y_curve[mask_blue]),    # Trace 3: Blue Curve
+                go.Scatter(x=[0, 100], y=[t_val, t_val]),                  # Trace 4: Horiz Line
+                go.Scatter(x=[x_val], y=[y_p], marker=dict(color=p_color)) # Trace 5: Bold Point
+            ],
+            traces=[2, 3, 4, 5],
+            name=f"t_{t_val}_x_{x_val}"
+        )
 
-
-            y_p = sigmoid(x_val)
-            # Color logic: Red if above threshold, Black if below
-            p_color = "blue" if y_p >= t_val else "green"
-
-            frames.append(go.Frame(
-                data=[
-                    go.Scatter(x=X[y_true == 1], y=y_true[y_true == 1]), # Trace 0: Blue dots
-                    go.Scatter(x=X[y_true == 0], y=y_true[y_true == 0]), # Trace 1: Green dots
-                    go.Scatter(x=x_curve[mask_green], y=y_curve[mask_green]), # Trace 2: Green Curve
-                    go.Scatter(x=x_curve[mask_blue], y=y_curve[mask_blue]),   # Trace 3: Blue Curve
-                    go.Scatter(x=[0, 100], y=[t_val, t_val]),                 # Trace 4: Horiz Line
-                    go.Scatter(x=[x_val], y=[y_p], marker=dict(color=p_color)) # Trace 5: Bold Point
-                ],
-                name=f"t_{t_val}_x_{x_val}"
-            ))
+    frames = [make_frame(round(t, 2), 60) for t in thresholds]
+    frames += [make_frame(0.5, int(x_p)) for x_p in x_positions if int(x_p) != 60]
 
     fig.frames = frames
 
@@ -214,7 +210,7 @@ def plot_lr_fit(X, y_true,slope_history, loss_history):
         rows=2, cols=1,
         row_heights=[0.65, 0.35],
         shared_xaxes=False,
-        vertical_spacing=0.12,
+        vertical_spacing=0.22,
         subplot_titles=("Sigmoid fit per epoch", "Loss curve")
     )
 
@@ -263,9 +259,15 @@ def plot_lr_fit(X, y_true,slope_history, loss_history):
     ), row=2, col=1)
 
 
-    # --- Animation frames (one per epoch) ---
+    # --- Animation frames: subsample epochs (~100 frames). One frame per
+    # epoch at 5000 epochs made the exported page tens of MB.
+    num_epochs_total = len(slope_history)
+    frame_step = max(1, num_epochs_total // 100)
+    frame_epochs = list(range(0, num_epochs_total, frame_step))
+    if frame_epochs[-1] != num_epochs_total - 1:
+        frame_epochs.append(num_epochs_total - 1)
     frames = []
-    for i in range(len(slope_history)):
+    for i in frame_epochs:
         m_i, b_i = slope_history[i]  # Changed: unpack tuple from slope_history
         loss_i = loss_history[i]     # Changed: get loss from loss_history
         curve_y = sigmoid(m_i * X_norm_dense + b_i)
@@ -293,7 +295,7 @@ def plot_lr_fit(X, y_true,slope_history, loss_history):
             label=str(i),
             method="animate",
         )
-        for i in range(0, num_epochs, max(1, num_epochs // 100))  # Changed: adaptive stepping
+        for i in frame_epochs
     ]
 
     sliders = [dict(
@@ -338,10 +340,10 @@ def plot_lr_fit(X, y_true,slope_history, loss_history):
 
     # --- Layout ---
     fig.update_layout(
-        height=620,
+        height=650,
         updatemenus=updatemenus,
         sliders=sliders,
-        legend=dict(orientation="h", y=1.07, x=0),
+        legend=dict(orientation="h", y=1.14, x=0, yanchor="bottom"),
         margin=dict(t=100, b=80),
     )
 
